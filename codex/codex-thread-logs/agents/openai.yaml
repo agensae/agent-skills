@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Thread Logs"
+  short_description: "Find and inspect Codex logs"
+  default_prompt: "Use $codex-thread-logs to find this Codex thread log and extract relevant evidence."
