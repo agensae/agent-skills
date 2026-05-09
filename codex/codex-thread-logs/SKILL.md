@@ -37,6 +37,8 @@ Codex session logs are newline-delimited JSON. Each line can have a different pa
 
 Use defensive `jq`: prefer `?`, `//`, `select(...)`, and `input_line_number`. Do not assume every payload has `.payload.type`, `.payload.name`, `.payload.content`, or `.payload.output`. Avoid `keys` or fixed-path assumptions as primary inspection; use them only after confirming the line family.
 
+When projecting rows for `@tsv`, remember that selected fields may be objects or arrays, not only scalars. Use `tostring` or `tojson` for uncertain values, or select explicit scalar subfields before formatting.
+
 ## Useful Extractors
 
 Use `jq` defensively. The filters below are shell-neutral; pass the target JSONL log file to `jq` using the syntax appropriate for the current OS and shell.
