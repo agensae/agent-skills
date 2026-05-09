@@ -4,3 +4,10 @@ __pycache__/
 
 # os
 .DS_Store
+
+# Agents
+.codex/
+.claude/
+.agents/
+AGENTS.md
+CLAUDE.md
