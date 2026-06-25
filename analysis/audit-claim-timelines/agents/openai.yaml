@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit Claim Timelines"
+  short_description: "Detect doc claim drift and oscillation"
+  default_prompt: "Use $audit-claim-timelines to determine whether this documentation history contains semantic flip-flops or unresolved contradictions."

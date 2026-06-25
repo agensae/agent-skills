@@ -7,6 +7,52 @@ A collection of our public agent skills.
 Each listed skill is a self-contained agent skill. The skill directory contains
 its `SKILL.md` instructions and any supporting files.
 
+### Analysis
+
+#### Audit Claim Timelines (`audit-claim-timelines`)
+
+Use this when a requirement, policy, example, or finding appears to have changed
+over time and you need to know whether it is a real contradiction, a resolved
+correction, or an active flip-flop.
+
+**Use it to**
+- **Check for back-and-forth change** - You suspect a rule may have changed from
+  `A -> B -> A`, or kept switching such as `A -> B -> A -> B`, and need evidence.
+- **Verify a one-time conflict or replacement** - You found two versions that
+  seem to disagree and need to know whether the older rule was only replaced or
+  later came back.
+- **Find current source conflicts** - You need to check whether two current
+  documents still say different things about the same rule.
+- **Validate a finding before applying it** - You have an old finding or review
+  note and need to make sure following it will not undo newer guidance.
+- **Check for a weaker rule over time** - You suspect the wording became less
+  strict and need to know whether the requirement really changed or was only
+  rephrased.
+- **Confirm an old issue is resolved** - You need to verify that the documents
+  now agree, so an old finding can be closed or ignored.
+- **Detect old behavior leaking back in** - You need to check whether old,
+  removed, or compatibility-only behavior is being treated as current again.
+- **Confirm cleanup is complete** - After cleanup, you need to check the
+  documents and history, then confirm that no important conflicts remain.
+
+**What you get**
+- A timeline that shows what each source said, when it said it, and where the
+  evidence is.
+- Clear labels for claims that mean the same thing, even when the wording is
+  different.
+- A plain result that says whether the history shows back-and-forth changes,
+  slow weakening, a replaced claim, a live conflict, a resolved issue, or no
+  important change.
+- A next step, such as updating the source of truth, closing an old finding, or
+  avoiding a stale fix.
+
+**Not for**
+- Summarizing Git history when you do not need to compare the meaning of a
+  claim, rule, policy, or requirement.
+- Copyediting or wording review when the expected behavior stayed the same.
+
+**Skill path:** `analysis/audit-claim-timelines`
+
 ### Codex
 
 #### Codex Thread Logs (`codex-thread-logs`)
