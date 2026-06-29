@@ -95,3 +95,39 @@ Can be used with Claude Code, when you need Claude to inspect a Codex thread.
   you need a verdict or score.
 
 **Skill path:** `codex/codex-thread-logs`
+
+### Orchestration
+
+#### Worktree Coding Fleet (`worktree-coding-fleet`)
+
+Use this when a coding job is too large or risky for one agent in one workspace
+and you need separate Git worktrees, careful branch merging, and final
+validation.
+
+**Use it when**
+- You want several coding agents to work at the same time without editing the
+  same working tree.
+- The work can be split up, but the parts may still meet in shared APIs,
+  schemas, generated files, or tests.
+- You want separate branches for different implementation ideas before choosing
+  what to merge.
+- You need a clear record of what each worker changed, what merged, and which
+  checks passed.
+
+**What you get**
+- A parent-agent process for creating worker branches and worktrees, assigning
+  work, and merging one branch at a time.
+- A worker contract that states what each worker may edit, what it may read but
+  not edit, what it must not read or touch, which checks to run, and what to
+  report.
+- A ledger for branch status, merge results, checks, conflicts, boundary issues,
+  blockers, and cleanup.
+- Cleanup guidance for removing finished worker worktrees and branches after the
+  important evidence is recorded.
+
+**Not for**
+- Read-only review or small changes that one agent can safely handle in the main
+  workspace.
+- Getting around sandbox, approval, network, or repository rules.
+
+**Skill path:** `orchestration/worktree-coding-fleet`

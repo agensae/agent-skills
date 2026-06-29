@@ -1,0 +1,4 @@
+interface:
+  display_name: "Worktree Coding Fleet"
+  short_description: "Coordinate isolated coding worktrees"
+  default_prompt: "Use $worktree-coding-fleet to split this implementation across isolated worktrees, merge the branches, and validate the combined result."
