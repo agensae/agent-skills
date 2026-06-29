@@ -63,6 +63,8 @@ evidence-backed explanation, decision, or reusable workflow from that history.
 Get the thread/session ID: in the Codex app, right-click a thread in the sidebar
 and choose `Copy session ID`; in Codex CLI, run `/status` and read `Session:`.
 
+Can be used with Claude Code, when you need Claude to inspect a Codex thread.
+
 **Primary use cases**
 1. **Thread outcome audits** - Check whether a completed thread's final answer
    was supported by the transcript evidence.
