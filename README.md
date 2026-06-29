@@ -60,6 +60,10 @@ correction, or an active flip-flop.
 Use this when the source of truth is a Codex session history and you need an
 evidence-backed explanation, decision, or reusable workflow from that history.
 
+Before first use, ask an agent to apply the skill's local customization so the
+workflow matches your local Codex data directory, skill path, and project
+artifact paths.
+
 Get the thread/session ID: in the Codex app, right-click a thread in the sidebar
 and choose `Copy session ID`; in Codex CLI, run `/status` and read `Session:`.
 
@@ -103,6 +107,9 @@ Can be used with Claude Code, when you need Claude to inspect a Codex thread.
 Use this when a coding job is too large or risky for one agent in one workspace
 and you need separate Git worktrees, careful branch merging, and final
 validation.
+
+Before first use, ask an agent to apply the skill's local customization so the
+workflow matches your local agent harness, branch rules, and worktree paths.
 
 **Use it when**
 - You want several coding agents to work at the same time without editing the

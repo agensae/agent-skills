@@ -147,16 +147,3 @@ For final reports, include only the high-signal ledger rows: branch, slice, merg
 - Do not keep worker worktrees solely for audit evidence. Use `kept:<reason>` only when retention is explicitly required and has an owner plus follow-up condition.
 - Treat any mutation of `read_only_files`, any use of `excluded_context`, or any access to `off_limits_surfaces` as a boundary deviation that must be reported and resolved before merge.
 
-## Portability Notes
-
-- Codex: map workers to subagents in subagent-capable app/CLI sessions after explicit delegation; default to `fork_context: false` and pass worker contracts explicitly. Parent owns approval policy, final integration/merge commits, and cleanup; workers may commit only when assigned.
-- Claude Code: map workers to worktree-isolated subagents (`isolation: worktree`) or Agent View/`claude --bg`; use Agent Teams only when enabled and do not assume teammates are worktree-isolated.
-- OpenCode: map workers to configured primary agents or subagents with per-agent permissions; use separate git worktree directories/instances for isolation.
-- pi.dev: use only with a Pi extension/package or external SDK/RPC wrapper that provides delegated agents and separate git worktrees.
-- OpenClaw: map slices to specialist lanes or spawned sub-agents with lane contracts, handoff rules, and tool-risk/tool-policy limits; provide git worktree isolation separately.
-- Cursor: map workers to background or cloud subagents when available; record agent IDs and keep parent-owned serial merges, validation, and cleanup.
-- GitHub Copilot: map workers to cloud-agent sessions, CLI sessions, or Agent HQ tasks; treat cloud branches/PRs as worker evidence, not final merge authority.
-- Devin Desktop/Windsurf: map workers to Cascade/Devin Local sessions in worktree mode or Agent Command Center spaces; record auto-created worktree paths.
-- Cline: map workers to CLI/Kanban agent-team tasks or one Cline process per worktree; treat built-in subagents as read-only unless documented otherwise.
-- Gemini CLI/Aider: run one process/session per isolated worktree; keep branch coordination, conflict arbitration, and cleanup parent-controlled.
-- Unknown harnesses: use the portable baseline of isolated git worktrees, worker contracts, serial parent merges, and a final validation ledger.
