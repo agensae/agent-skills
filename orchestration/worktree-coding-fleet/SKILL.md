@@ -26,6 +26,8 @@ Use a simpler path instead when the task is read-only or a small, clearly single
    - Do not traverse `excluded_context` or `off_limits_surfaces` paths merely to find repo instructions.
    - Run `git status --short` and identify existing user changes.
    - Record the base commit with `git rev-parse HEAD`.
+   - Record the parent checkout before any branch switch: current branch with `git branch --show-current` or detached state, current commit, whether this is the user's primary checkout, and the intended `return_branch`. Default `return_branch` to the entry branch; use `main` only when the run began on `main` or the user explicitly asks to return there.
+   - If the parent checkout is already on an old fleet/integration branch but the task should start from `main` or trunk, resolve that mismatch before creating another integration branch. Do not silently stack a new integration branch on top of a stale checked-out fleet branch.
    - Create or select one integration branch where worker branches will be merged.
 
 2. Plan slices before delegation.
@@ -67,7 +69,9 @@ Use a simpler path instead when the task is read-only or a small, clearly single
    - Never remove the integration branch or the parent target repo worktree.
    - Do not retain a worker worktree only because it contains audit evidence; preserve that evidence in the ledger first.
    - If a worker worktree or branch is not removed, record `kept:<reason>`, `pending:<reason>`, or `blocked:<reason>` in `cleanup_status`. Include the owner and follow-up condition for every retained or deferred item.
-   - Run `git worktree list` after cleanup and record the final result in the ledger.
+   - After worker cleanup, restore the user's primary parent checkout to `return_branch` when the integration result is committed, validation evidence is recorded, and the parent worktree is clean. Use a normal `git switch`; never force, reset, stash, or discard user changes just to restore the branch.
+   - If the parent checkout cannot be restored, record `parent_checkout_status` as `kept:<reason>`, `pending:<reason>`, or `blocked:<reason>` with owner and follow-up condition. The final report must name the active branch left behind.
+   - Run `git status` and `git worktree list` after branch restoration or after recording the restoration blocker, and record the final result in the ledger.
    - Follow the environment's approval policy for destructive cleanup commands. If approval or sandbox limits prevent cleanup, record `pending:<reason>` instead of silently retaining worktrees.
 
 ## Worker Contract
@@ -109,6 +113,8 @@ Maintain a compact ledger while the fleet runs. Set `parent_session` to the actu
 At minimum, track:
 
 - `parent_session`
+- `parent_entry_branch`
+- `parent_return_branch`
 - `child_session`
 - `base_commit`
 - `worker_branch`
@@ -131,10 +137,11 @@ At minimum, track:
 - `boundary_deviations`
 - `cleanup_status`
 - `cleanup_command_result`
+- `parent_checkout_status`
 - `final_worktree_list`
 - `retained_owner_followup`
 
-For final reports, include only the high-signal ledger rows: branch, slice, merge result, validation result, boundary deviations, remaining blockers, cleanup state with reason when not `removed`, and post-cleanup `git worktree list` evidence for any remaining worker worktrees.
+For final reports, include only the high-signal ledger rows: branch, slice, merge result, validation result, boundary deviations, remaining blockers, cleanup state with reason when not `removed`, parent checkout restoration state, and post-cleanup `git status`/`git worktree list` evidence for any remaining worker worktrees or non-restored parent branch.
 
 ## Guardrails
 
@@ -145,5 +152,5 @@ For final reports, include only the high-signal ledger rows: branch, slice, merg
 - Do not rely on slice tests as whole-system proof after multiple branches merge.
 - Do not delete worktrees or branches until the parent has recorded the evidence needed to recover or audit the run and final validation is complete.
 - Do not keep worker worktrees solely for audit evidence. Use `kept:<reason>` only when retention is explicitly required and has an owner plus follow-up condition.
+- Do not leave the user's primary checkout on a fleet integration branch as the routine end state. Restore the recorded `return_branch`, or report the exact blocker and active branch.
 - Treat any mutation of `read_only_files`, any use of `excluded_context`, or any access to `off_limits_surfaces` as a boundary deviation that must be reported and resolved before merge.
-

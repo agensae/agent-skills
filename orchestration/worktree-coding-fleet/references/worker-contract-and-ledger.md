@@ -62,6 +62,8 @@ Before final reporting, backfill every row with the same concrete `parent_sessio
 | Field | Record |
 | --- | --- |
 | `parent_session` | Actual parent thread/session identifier, e.g. `$CODEX_THREAD_ID` in Codex; otherwise the harness-provided ID or `unknown:<reason>`. |
+| `parent_entry_branch` | Branch or detached commit checked out in the user's primary parent worktree before fleet setup. |
+| `parent_return_branch` | Branch the parent should restore in the primary checkout after integration and worker cleanup. Default to `parent_entry_branch`; use `main` only when the run began there or the user explicitly requested it. |
 | `child_session` | Worker thread/session identifier when known. |
 | `base_commit` | Commit used to create the worker branch/worktree. |
 | `slice_id` | Stable short label for the worker lane. |
@@ -84,10 +86,11 @@ Before final reporting, backfill every row with the same concrete `parent_sessio
 | `blockers` | Remaining blocker, if any. |
 | `cleanup_status` | `removed`, `kept:<reason>`, `pending:<reason>`, or `blocked:<reason>`. Use `removed` for the normal successful cleanup path. |
 | `cleanup_command_result` | Cleanup commands attempted by the parent and their result, including worktree removal and safe branch deletion. Use `none:<reason>` only when no cleanup command was appropriate. |
+| `parent_checkout_status` | `restored:<branch>` when the primary checkout was switched back after cleanup; otherwise `kept:<reason>`, `pending:<reason>`, or `blocked:<reason>` with the active branch and required follow-up. |
 | `final_worktree_list` | Post-cleanup `git worktree list` result or a compact summary naming any remaining worker worktrees. |
 | `retained_owner_followup` | Required when `cleanup_status` is not `removed`; name the owner and follow-up condition for retained, pending, or blocked worktrees/branches. |
 
-Default cleanup policy: after final validation, the parent removes clean completed worker worktrees whose branches were merged or intentionally skipped, unless an explicit retention reason exists. The parent then deletes eligible merged worker branches with safe branch deletion after their worktrees are gone. The parent never removes the integration branch or parent target repo worktree. Audit evidence alone is not a retention reason; preserve evidence in the ledger first.
+Default cleanup policy: after final validation, the parent removes clean completed worker worktrees whose branches were merged or intentionally skipped, unless an explicit retention reason exists. The parent then deletes eligible merged worker branches with safe branch deletion after their worktrees are gone. After worker cleanup, the parent restores the user's primary checkout to `parent_return_branch` when the parent worktree is clean and restoration is not explicitly blocked. The parent never removes the integration branch or parent target repo worktree. Audit evidence alone is not a retention reason; preserve evidence in the ledger first.
 
 ## Merge Verdicts
 
@@ -107,4 +110,4 @@ Summarize the fleet in this order:
 4. Conflicts and how they were resolved or redispatched.
 5. Boundary deviations and parent disposition.
 6. Remaining blockers or risk.
-7. Cleanup status for worktrees and branches, including post-cleanup `git worktree list` evidence and owner/follow-up condition for anything not `removed`.
+7. Cleanup status for worktrees, branches, and the parent checkout, including post-cleanup `git status`/`git worktree list` evidence and owner/follow-up condition for anything not restored or `removed`.
