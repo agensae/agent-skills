@@ -26,7 +26,7 @@ Use a simpler path instead when the task is read-only or a small, clearly single
    - Do not traverse `excluded_context` or `off_limits_surfaces` paths merely to find repo instructions.
    - Run `git status --short` and identify existing user changes.
    - Record the base commit with `git rev-parse HEAD`.
-   - Record the parent checkout before any branch switch: current branch with `git branch --show-current` or detached state, current commit, whether this is the user's primary checkout, and the intended `return_branch`. Default `return_branch` to the entry branch; use `main` only when the run began on `main` or the user explicitly asks to return there.
+   - Record the parent checkout before any branch switch: current branch with `git branch --show-current` or detached state, current commit, whether this is the user's primary checkout, the intended `target_branch`, and the intended `return_branch`. Default both `target_branch` and `return_branch` to the entry branch for local implementation tasks. Use a different target only when the user asks for a branch-only handoff, pull request, or another explicit integration target.
    - If the parent checkout is already on an old fleet/integration branch but the task should start from `main` or trunk, resolve that mismatch before creating another integration branch. Do not silently stack a new integration branch on top of a stale checked-out fleet branch.
    - Create or select one integration branch where worker branches will be merged.
 
@@ -62,7 +62,15 @@ Use a simpler path instead when the task is read-only or a small, clearly single
    - Do not ask multiple workers to resolve the same conflict concurrently.
    - Do not merge a branch whose tests or status are unknown unless the ledger marks the risk explicitly.
 
-7. Record evidence and clean up.
+7. Deliver or explicitly defer the integrated result.
+   - After final validation and after the integration result is committed, decide whether `target_branch` should receive the integration branch result. Do this before presenting the work as complete.
+   - If the user requested a branch-only handoff, pull request, review branch, or explicitly said not to update the target branch, record `delivery_status: not-delivered:<reason>` and keep the integration branch as the deliverable.
+   - Otherwise, move `target_branch` to the integrated result using the safest normal Git operation that matches repository policy. Prefer a fast-forward-only merge when `target_branch` is an ancestor of the integration branch. Use a non-fast-forward merge only when that is required and acceptable for the repo. Never force-push, reset, rebase, squash, or discard user changes as part of delivery unless the user explicitly asks.
+   - If delivery is blocked by divergence, dirty state, approval limits, failed validation, or unclear policy, record `delivery_status: blocked:<reason>` or `pending:<reason>` with the exact active branch, integration branch, target branch, and next command or decision needed.
+   - If the integration branch is not delivered to `target_branch`, the final report must lead with: work is on `<integration_branch>` and is not on `<target_branch>`. Include the exact next command when a fast-forward or merge appears safe.
+   - If delivery succeeds, record the delivered commit and verify `target_branch` contains the integration head.
+
+8. Record evidence and clean up.
    - Before cleanup, record branch names, worktree paths, worker commits, merge commits, validation commands and results, conflict dispositions, and boundary deviations in the ledger.
    - After final validation, remove each worker worktree by default when the worker has finished, the worktree is clean, the branch is merged or intentionally skipped, and no explicit retention reason exists.
    - Delete eligible merged worker branches only after their worktrees are removed, using safe branch deletion. Never delete skipped, unmerged, dirty, or unexplained worker branches as routine cleanup.
@@ -114,6 +122,7 @@ At minimum, track:
 
 - `parent_session`
 - `parent_entry_branch`
+- `target_branch`
 - `parent_return_branch`
 - `child_session`
 - `base_commit`
@@ -137,11 +146,14 @@ At minimum, track:
 - `boundary_deviations`
 - `cleanup_status`
 - `cleanup_command_result`
+- `delivery_status`
+- `delivery_command_result`
 - `parent_checkout_status`
+- `final_target_status`
 - `final_worktree_list`
 - `retained_owner_followup`
 
-For final reports, include only the high-signal ledger rows: branch, slice, merge result, validation result, boundary deviations, remaining blockers, cleanup state with reason when not `removed`, parent checkout restoration state, and post-cleanup `git status`/`git worktree list` evidence for any remaining worker worktrees or non-restored parent branch.
+For final reports, include only the high-signal ledger rows: branch, slice, merge result, validation result, boundary deviations, remaining blockers, delivery state, cleanup state with reason when not `removed`, parent checkout restoration state, and post-cleanup `git status`/`git worktree list` evidence for any remaining worker worktrees or non-restored parent branch. If delivery did not put the integration result on `target_branch`, make that the first final-report item.
 
 ## Guardrails
 
@@ -152,5 +164,6 @@ For final reports, include only the high-signal ledger rows: branch, slice, merg
 - Do not rely on slice tests as whole-system proof after multiple branches merge.
 - Do not delete worktrees or branches until the parent has recorded the evidence needed to recover or audit the run and final validation is complete.
 - Do not keep worker worktrees solely for audit evidence. Use `kept:<reason>` only when retention is explicitly required and has an owner plus follow-up condition.
+- Do not imply the user's target branch contains the work merely because the primary checkout is clean on that branch. Verify branch containment and report when the integration result is branch-only.
 - Do not leave the user's primary checkout on a fleet integration branch as the routine end state. Restore the recorded `return_branch`, or report the exact blocker and active branch.
 - Treat any mutation of `read_only_files`, any use of `excluded_context`, or any access to `off_limits_surfaces` as a boundary deviation that must be reported and resolved before merge.
