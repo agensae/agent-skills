@@ -1,11 +1,15 @@
 # Codex Thread Logs User Guide
 
-Use this guide when you want an Agent to inspect a saved Codex thread and need 
+Use this guide when you want an Agent to inspect a saved Codex thread and need
 to provide the right session ID.
 
-Codex may refer to the same ID as a `thread ID` or a `session ID`. For this 
+Codex may refer to the same ID as a `thread ID` or a `session ID`. For this
 skill, either label is fine: provide the ID for the conversation you want
 inspected.
+
+Before using this skill for the first time, we recommend invoking it with a request
+that the agent review the local customization guide. The agent will then make
+sure the skill and its tool are optimized for your own environment.
 
 ## What To Provide
 
@@ -93,4 +97,3 @@ codex exec --json "your prompt here"
 The JSONL stream includes a `thread.started` event with a `thread_id`. Note
 that `codex exec --ephemeral` does not write the saved session files used for
 log review.
-
