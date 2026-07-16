@@ -1,15 +1,15 @@
 # Codex Thread Logs User Guide
 
-Use this guide when you want an Agent to inspect a saved Codex thread and need
+Use this guide when you want an Agent to inspect a saved Codex task and need
 to provide the right session ID.
 
-Codex may refer to the same ID as a `thread ID` or a `session ID`. For this
-skill, either label is fine: provide the ID for the conversation you want
-inspected.
+Codex and ChatGPT desktop may refer to the same ID as a `thread ID`,
+`session ID`, or `task ID`. For this skill, any of these labels is fine: provide
+the ID for the conversation you want inspected.
 
-Before using this skill for the first time, we recommend invoking it with a request
-that the agent review the local customization guide. The agent will then make
-sure the skill and its tool are optimized for your own environment.
+If your Codex data is not stored in the default location, ask the agent to
+consult `references/local-customization.md` for the supported localization
+workflow.
 
 ## What To Provide
 
@@ -23,21 +23,22 @@ Codex used, etc.
 
 Optional / helpful:
 - The date, if you know it.
-- Whether the run came from the Codex app, interactive CLI, or `codex exec`.
+- Whether the run came from the ChatGPT desktop app, interactive Codex CLI, or
+  `codex exec`.
 
 Example:
 
 ```text
-Use $codex-thread-logs to inspect session 0192661e-9384-4d75-b122-40a1cff1996b
+Use $codex-thread-logs to inspect session <thread-id>
 from July 1, 2026. Check whether the final answer was supported by tool output.
 ```
 
 ## Find A Session ID
 
-### Codex App (Recommended)
+### ChatGPT Desktop App (Recommended)
 
-1. Find the chat in the Codex app sidebar.
-2. Right-click the chat.
+1. Find the task in the ChatGPT desktop app sidebar.
+2. Right-click the task.
 3. Click `Copy session ID`.
 4. Paste that ID into your request.
 
@@ -84,8 +85,10 @@ If the picker is not enough, Codex stores local session files under:
 ~/.codex/sessions/
 ```
 
-Those files are organized by date, and the session ID is usually the last UUID
-in the `.jsonl` filename.
+Active files are organized by date. Archived task files may instead be under
+`~/.codex/archived_sessions/`. In either location, the session ID is usually
+the last UUID in the `.jsonl` filename. Prefer the skill's locator rather than
+searching these directories manually.
 
 For non-interactive runs, start the run with JSON output if you know you will
 need the ID later:

@@ -8,6 +8,7 @@ Customize the skill when you can verify one or more of these facts:
 
 - The project-relative path where the skill is installed.
 - The local Codex data directory, if it is not the default `~/.codex`.
+- The configured `sqlite_home`, if the SQLite thread index is stored separately.
 - The project or toolchain layout that affects where referenced worktrees, artifacts, or archived files move.
 - Shell or runtime conventions that make examples directly runnable in that environment.
 
@@ -29,15 +30,20 @@ Before changing `SKILL.md`, verify the path exists from the expected working dir
 test -f .agents/skills/codex-thread-logs/scripts/find_thread_log.py
 ```
 
-If agents may run from multiple roots, keep the generic wording in `SKILL.md` and document project-specific invocation details in a separate project-local reference named `references/project-local-thread-logs.md`. 
+If agents may run from multiple roots, keep the generic wording in `SKILL.md`
+and document project-specific invocation details separately. The skill's
+`references/` subdirectory is one suitable location, but use the layout that
+fits the project.
 
 ## Verify The Codex Data Directory
 
-The locator defaults to:
+The locator defaults to `$CODEX_HOME` when set, otherwise `~/.codex`, and checks:
 
 - `~/.codex/sessions`
+- `~/.codex/archived_sessions`
 - `~/.codex/shell_snapshots`
 - `~/.codex/session_index.jsonl`
+- `~/.codex/state_*.sqlite` as a read-only thread and parent/child index
 
 If the local Codex installation uses another data directory, verify it before editing examples:
 
@@ -52,6 +58,8 @@ Good local customization:
 ```bash
 python3 .agents/skills/codex-thread-logs/scripts/find_thread_log.py <thread-id> --sessions-root /path/to/codex/sessions
 ```
+
+If `sqlite_home` differs from the sessions parent, add `--sqlite-root /path/to/sqlite-home`. Do not redirect transcript inspection to `logs_*.sqlite`; those are runtime diagnostic logs rather than session JSONL and may be very large.
 
 Bad local customization:
 
@@ -87,7 +95,7 @@ When editing the skill for local use:
 
 1. Find the installed skill directory from the target project root.
 2. Run the locator once against a known thread ID.
-3. Confirm whether `~/.codex` is correct or an explicit `--sessions-root` is needed.
+3. Confirm whether `$CODEX_HOME`/`~/.codex` is correct or explicit `--sessions-root` and `--sqlite-root` values are needed.
 4. Check whether the project has stable archive, artifact, or worktree relocation paths that affect stale log references.
 5. Edit `SKILL.md` only for high-value facts agents should see immediately.
 6. Put lower-frequency details in `references/project-local-thread-logs.md`.
